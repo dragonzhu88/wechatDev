@@ -3,8 +3,14 @@
  * wechat php test
  */
 
+require_once('RespondCommonMsg.class.php');
+require_once('TemplateMsg.class.php');
+require_once('GetFollowerList.class.php');
+
 //define your token
 define("TOKEN", "dragon");
+define("APPID","wx9fbe441cac0bd7d1");
+define("APPCECRET","79a664feb2260bec0e8bf2edc395e71c");
 $wechatObj = new wechatCallbackapiTest();
 
 
@@ -16,9 +22,15 @@ if($_GET['echostr']){
 
 class wechatCallbackapiTest
 {
+    private $_textSender;
+    private $_templateSender;
+    private $_getUserList;
+
     public function __construct()
     {
-        
+        $this->_textSender = new RespondCommonMsg();
+        $this->_templateSender = new TemplateMsg(APPID,APPCECRET);
+        $this->_getUserList = new GetFollowerList(APPID,APPCECRET);
     }
 
 
@@ -69,19 +81,21 @@ class wechatCallbackapiTest
                the best way is to check the validity of xml by yourself */
             libxml_disable_entity_loader(true);
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $fromUsername = $postObj->FromUserName;
-            $toUsername = $postObj->ToUserName;
+
+
             $keyword = trim($postObj->Content);
-            $time = time();
+
 
             $event = $postObj->Event;
 
             switch($event){
                 case 'subscribe':
-
+                    $textContent = '欢迎订阅白羽扇的公众号！';
+                    echo $this->_textSender->RespondTextMsg($postObj,$textContent);
                     break;
                 case 'unsubscribe':
-
+                    $textContent = '你怎么忍心残忍退订，555...';
+                    echo $this->_textSender->RespondTextMsg($postObj,$textContent);
                     break;
 
                 case 'SCAN':
@@ -89,18 +103,8 @@ class wechatCallbackapiTest
                     break;
 
                 case 'LOCATION':
-                    $textTpl = "<xml>
-							<ToUserName><![CDATA[%s]]></ToUserName>
-							<FromUserName><![CDATA[%s]]></FromUserName>
-							<CreateTime>%s</CreateTime>
-							<MsgType><![CDATA[%s]]></MsgType>
-							<Content><![CDATA[%s]]></Content>
-							<FuncFlag>0</FuncFlag>
-							</xml>";
-                    $msgType = "text";
-                    $contentStr = "Welcome to wechat world!";
-                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-                    echo $resultStr;
+                    $textContent = '经度 = '.$postObj->Longitude.' 纬度 = '.$postObj->Latitude;
+                    echo $this->_textSender->RespondTextMsg($postObj,$textContent);
                     break;
 
                 case 'CLICK':
@@ -115,22 +119,17 @@ class wechatCallbackapiTest
                     break;
             }
 
-            $textTpl = "<xml>
-							<ToUserName><![CDATA[%s]]></ToUserName>
-							<FromUserName><![CDATA[%s]]></FromUserName>
-							<CreateTime>%s</CreateTime>
-							<MsgType><![CDATA[%s]]></MsgType>
-							<Content><![CDATA[%s]]></Content>
-							<FuncFlag>0</FuncFlag>
-							</xml>";
             if(!empty( $keyword ))
             {
-                $msgType = "text";
-                $contentStr = "Welcome to wechat world!";
-                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-                echo $resultStr;
+                switch($keyword){
+                    case '用户列表':
+                        $userListInfo = $this->_getUserList->getFollowerList();
+                        $textContent = $userListInfo['total'].$userListInfo['count'].$userListInfo['next_openid'];
+                        break;
+                }
+
             }else{
-                echo "Input something...";
+
             }
 
         }else {
