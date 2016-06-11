@@ -36,6 +36,10 @@ class GetFollowerList
 
     }
 
+    public function getAccessToken(){
+        return $this->_access_token;
+    }
+
 
     public function getFollowerList(){
         $url = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=".$this->_access_token;
