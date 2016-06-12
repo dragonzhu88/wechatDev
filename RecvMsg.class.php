@@ -9,6 +9,10 @@
 
 
 require_once('RespondCommonMsg.class.php');
+require_once('TemplateMsg.class.php');
+
+define("APPID","wx9fbe441cac0bd7d1");
+define("APPCECRET","79a664feb2260bec0e8bf2edc395e71c");
 
 class RecvMsg
 {
@@ -69,8 +73,8 @@ class RecvMsg
         switch ($postObj->Event)
         {
             case "subscribe":
-                $content = "欢迎关注白羽扇 ";
-                $content .= (!empty($postObj->EventKey))?("\n来自二维码场景 ".str_replace("qrscene_","",$postObj->EventKey)):"";
+                $content = "欢迎关注白羽扇 \n 输入【帮助】可以查询所有功能";
+               // $content .= (!empty($postObj->EventKey))?("\n来自二维码场景 ".str_replace("qrscene_","",$postObj->EventKey)):"";
                 break;
 
             case "unsubscribe":
@@ -80,9 +84,8 @@ class RecvMsg
             case "CLICK":
                 switch ($postObj->EventKey)
                 {
-                    case "COMPANY":
-                        $content = array();
-                        $content[] = array("Title"=>"白羽扇科技", "Description"=>"", "PicUrl"=>"http://discuz.comli.com/weixin/weather/icon/cartoon.jpg", "Url" =>"http://m.cnblogs.com/?u=txw1958");
+                    case "EDU":
+                        $content = "cnbeta:http://www.cnbeta.com/ \nT牛人网:http://www.itniuren.com/ \nCSDN:http://www.csdn.net/ \ntechweb:http://www.techweb.com.cn/";
                         break;
 
                     default:
@@ -139,15 +142,16 @@ class RecvMsg
                 $content = "receive a new event: ".$postObj->Event;
                 break;
 
-            $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
 
-            return $result;
         }
+        $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+
+        return $result;
     }
 
     public function recvTextMsg($postObj){
         $keyword = trim($postObj->Content);
-        $content = 'null';
+        $content = null;
 
         switch($keyword){
             case '你好':
@@ -155,10 +159,119 @@ class RecvMsg
                 $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
                 break;
 
+            case '帮助':
+                $content = "输入以下文字进入相应的功能：\n【音乐】收听火影忍者音乐\n【表情】收到一个表情\n【单图文】收到一个单图文信息\n【多图文】收到一个多图文信息\n【2048】玩2048游戏\n【第三方】进入第三方登操作\n【查成绩】进入英语4,6级查询\n
+                ";
+
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+                break;
+
             case '音乐':
                 $content = array();
-                $content = array("Title"=>"最炫民族风", "Description"=>"歌手：凤凰传奇", "MusicUrl"=>"http://121.199.4.61/music/zxmzf.mp3", "HQMusicUrl"=>"http://121.199.4.61/music/zxmzf.mp3");
+                $content = array(
+                    "Title"=>"火影忍者",
+                    "Description"=>"歌手：火影忍者",
+                    "MusicUrl"=>"http://sc.111ttt.com/up/mp3/308288/94E95FCC7873F08363267D44B2B7B4DE.mp3",
+                    "HQMusicUrl"=>"http://sc.111ttt.com/up/mp3/308288/94E95FCC7873F08363267D44B2B7B4DE.mp3");
                 $result = $this->_respondMsg->RespondMusicMsg($postObj,$content);
+                break;
+
+            case '表情':
+                $content = "中国：".$this->bytes_to_emoji(0x1F1E8).$this->bytes_to_emoji(0x1F1F3)."\n仙人掌：".$this->bytes_to_emoji(0x1F335);
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+                break;
+
+            case '单图文':
+                $content = array();
+                $content[] = array(
+                    "Title"=>"单图文标题",
+                    "Description"=>"单图文内容",
+                    "PicUrl"=>"http://discuz.comli.com/weixin/weather/icon/cartoon.jpg",
+                    "Url" =>"http://m.cnblogs.com/?u=txw1958");
+                $result = $this->_respondMsg->RespondNewsMsg($postObj,$content);
+                break;
+
+            case '多图文':
+                $content = array();
+                $content[] = array("Title"=>"多图文1标题", "Description"=>"", "PicUrl"=>"http://discuz.comli.com/weixin/weather/icon/cartoon.jpg", "Url" =>"http://m.cnblogs.com/?u=txw1958");
+                $content[] = array("Title"=>"多图文2标题", "Description"=>"", "PicUrl"=>"http://d.hiphotos.bdimg.com/wisegame/pic/item/f3529822720e0cf3ac9f1ada0846f21fbe09aaa3.jpg", "Url" =>"http://m.cnblogs.com/?u=txw1958");
+                $content[] = array("Title"=>"多图文3标题", "Description"=>"", "PicUrl"=>"http://g.hiphotos.bdimg.com/wisegame/pic/item/18cb0a46f21fbe090d338acc6a600c338644adfd.jpg", "Url" =>"http://m.cnblogs.com/?u=txw1958");
+                $result = $this->_respondMsg->RespondNewsMsg($postObj,$content);
+                break;
+
+            case '2048':
+                $content = array();
+                $content[] = array(
+                    "Title"=>"2048游戏",
+                    "Description"=>"游戏规则很简单，每次可以选择上下左右其中一个方向去滑动，每滑动一次，所有的数字方块都会往滑动的方向靠拢外，系统也会在空白的地方乱数出现一个数字方块，相同数字的方块在靠拢、相撞时会相加。系统给予的数字方块不是2就是4，玩家要想办法在这小小的16格范围中凑出“2048”这个数字方块。",
+                    "PicUrl"=>"http://img.laohu.com/www/201403/27/1395908994962.png",
+                    "Url" =>"http://gabrielecirulli.github.io/2048/");
+                $result = $this->_respondMsg->RespondNewsMsg($postObj,$content);
+                break;
+
+            case '查成绩':
+                $content = array();
+                $content[] = array("Title" =>"2016年6月全国大学英语四六级考试成绩查询",
+                    "Description" =>"", "PicUrl" =>"http://365jia.cn/uploads/13/0301/5130c2ff93618.jpg",
+                    "Url" =>"http://cet.99sushe.com/");
+                $result = $this->_respondMsg->RespondNewsMsg($postObj, $content);
+
+                break;
+
+            case '第三方':
+                $url = 'http://whiteyushan.sinaapp.com/oauth2.php';
+                $content='https://open.weixin.qq.com/connect/oauth2/authorize?appid='.APPID.'&redirect_uri='.$url.'&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect';
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+                break;
+
+            case '模板消息':
+                    $tempObj = new TemplateMsg(APPID,APPCECRET);
+                    $template = array('touser' => 'oJx_3t76LNyOLfTAzgyal2th-fEo',
+                        "template_id" =>"ilzpCMKUFuIQ6TURnfNXJeEQEihpyuhhmDV_R0_m8iM",
+                        "url"=>"http://weixin.qq.com/download",
+                        'topcolor' => '#7B68EE',
+                        "data"=> array(
+                            "User" => array(
+                                "value"=>"朱先生",
+                                "color"=>"#173177"
+                            ),
+                            "Date"=> array(
+                                "value"=>"12月28日 19时24分",
+                                "color"=>"#173177"
+                            ),
+                            "CardNumber"=>  array(
+                                "value"=>"5523",
+                                "color"=>"#173177"
+                            ),
+                            "Type"=> array(
+                                "value"=>"消费",
+                                "color"=>"#173177"
+                            ),
+                            "Money"=> array(
+                                "value"=>"人民币122260.00元",
+                                "color"=>"#173177"
+                            ),
+                            "DeadTime"=> array(
+                                "value"=>"12月28日19时24分",
+                                "color"=>"#173177"
+                            ),
+                            "Left"=> array(
+                                "value"=>"366504.09",
+                                "color"=>"#173177"
+                            )
+                        )
+                    );
+
+                $content = 'test';//$tempObj->getAccessToken();
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+
+                //var_dump($tempObj->sendTemplateMsg(urldecode(json_encode($template))));
+                  //  $result = $tempObj->sendTemplateMsg(urldecode(json_encode($template)));
+            break;
+
+            default:
+                $content = '没有匹配关键字';
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
                 break;
         }
 
@@ -189,7 +302,7 @@ class RecvMsg
     }
 
     public function recvVedioMsg($postObj){
-        $content = array("MediaId"=>$postObj->MediaId, "ThumbMediaId"=>$postObj->ThumbMediaId, "Title"=>"", "Description"=>"");
+        $content = array("MediaId"=>$postObj->MediaId, "ThumbMediaId"=>$postObj->ThumbMediaId);
         $result = $this->_respondMsg->RespondVideoMsg($postObj, $content);
         return $result;
     }
@@ -199,5 +312,19 @@ class RecvMsg
         $result = $this->_respondMsg->RespondTextMsg($postObj, $content);
         return $result;
     }
+
+    public function bytes_to_emoji($cp)
+    {
+        if ($cp > 0x10000){       # 4 bytes
+            return chr(0xF0 | (($cp & 0x1C0000) >> 18)).chr(0x80 | (($cp & 0x3F000) >> 12)).chr(0x80 | (($cp & 0xFC0) >> 6)).chr(0x80 | ($cp & 0x3F));
+        }else if ($cp > 0x800){   # 3 bytes
+            return chr(0xE0 | (($cp & 0xF000) >> 12)).chr(0x80 | (($cp & 0xFC0) >> 6)).chr(0x80 | ($cp & 0x3F));
+        }else if ($cp > 0x80){    # 2 bytes
+            return chr(0xC0 | (($cp & 0x7C0) >> 6)).chr(0x80 | ($cp & 0x3F));
+        }else{                    # 1 byte
+            return chr($cp);
+        }
+    }
+
     
 }
