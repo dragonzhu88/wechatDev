@@ -27,7 +27,7 @@ class RespondCommonMsg{
         return $resultStr;
     }
 
-    public function RespondImgMsg($postObj,$mediaIdStr){
+    public function RespondImgMsg($postObj,$imageArray){
         $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>
                                 <FromUserName><![CDATA[%s]]></FromUserName>
@@ -43,11 +43,11 @@ class RespondCommonMsg{
         $createTime = time();
         $msgType = "image";
 
-        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType, $mediaIdStr);
+        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType, $imageArray['MediaId']);
         return $resultStr;
     }
 
-    public function RespondVoiceMsg($postObj,$mediaIdStr){
+    public function RespondVoiceMsg($postObj,$voiceArray){
         $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>
                                 <FromUserName><![CDATA[%s]]></FromUserName>
@@ -63,11 +63,11 @@ class RespondCommonMsg{
         $createTime = time();
         $msgType = "voice";
 
-        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType, $mediaIdStr);
+        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType, $voiceArray['MediaId']);
         return $resultStr;
     }
 
-    public function RespondVideoMsg($postObj,$mediaIdStr,$title,$description){
+    public function RespondVideoMsg($postObj,$videoArray){
         $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>
                                 <FromUserName><![CDATA[%s]]></FromUserName>
@@ -75,6 +75,7 @@ class RespondCommonMsg{
                                 <MsgType><![CDATA[%s]]></MsgType>
                                 <Video>
                                 <MediaId><![CDATA[%s]]></MediaId>
+                                <ThumbMediaId><![CDATA[%s]]></ThumbMediaId>
                                 </Video>
                                 </xml>";
 
@@ -83,11 +84,11 @@ class RespondCommonMsg{
         $createTime = time();
         $msgType = "video";
 
-        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType, $mediaIdStr, $title, $description);
+        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType, $videoArray['MediaId'],$videoArray['ThumbMediaId']);
         return $resultStr;
     }
 
-    public function RespondMusicMsg($postObj,$mediaIdStr,$title,$description,$musicUrl,$hqMusicUrl,$thumbMediaId){
+    public function RespondMusicMsg($postObj,$musicArray){
         $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>
                                 <FromUserName><![CDATA[%s]]></FromUserName>
@@ -98,7 +99,6 @@ class RespondCommonMsg{
                                 <Description><![CDATA[%s]]></Description>
                                 <MusicUrl><![CDATA[%s]]></MusicUrl>
                                 <HQMusicUrl><![CDATA[%s]]></HQMusicUrl>
-                                <ThumbMediaId><![CDATA[%s]]></ThumbMediaId>
                                 </Music>
                                 </xml>";
 
@@ -108,9 +108,10 @@ class RespondCommonMsg{
         $msgType = "music";
 
         $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $createTime, $msgType,
-            $mediaIdStr, $title, $description, $musicUrl, $hqMusicUrl, $thumbMediaId);
+            $musicArray['Title'], $musicArray['Description'], $musicArray['MusicUrl'], $musicArray['HQMusicUrl']);
         return $resultStr;
     }
+
 
     public function RespondNewsMsg($postObj,$newsArray){
         if(!is_array($newsArray)){
