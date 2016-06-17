@@ -219,15 +219,15 @@ class RecvMsg
                 break;
 
             case '第三方':
-                $url = 'http://whiteyushan.sinaapp.com/oauth2.php';
-                $content='https://open.weixin.qq.com/connect/oauth2/authorize?appid='.APPID.'&redirect_uri='.$url.'&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect';
+                $url = 'http://whiteyushan.sinaapp.com/oauth2.html';
+                $content="<a href=\"https://open.weixin.qq.com/connect/oauth2/authorize?appid=".APPID.'&redirect_uri='.$url."&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect\" > 点击认证 </a>";
                 $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
                 break;
 
             case '模板消息':
-                    $tempObj = new TemplateMsg(APPID,APPCECRET);
+                    $tempObj = new TemplateMsg();
                     $template = array('touser' => 'oJx_3t76LNyOLfTAzgyal2th-fEo',
-                        "template_id" =>"ilzpCMKUFuIQ6TURnfNXJeEQEihpyuhhmDV_R0_m8iM",
+                        "template_id" =>"0ZxaJRvThvxwfWXIiGd2-oQurUtsKBhnh71YB2PRHNE",
                         "url"=>"http://weixin.qq.com/download",
                         'topcolor' => '#7B68EE',
                         "data"=> array(
@@ -262,11 +262,12 @@ class RecvMsg
                         )
                     );
 
-                $content = 'test';//$tempObj->getAccessToken();
-                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+               // $content = $tempObj->getAccessToken();
+                //$result = $this->_respondMsg->RespondTextMsg($postObj,$content);
 
                 //var_dump($tempObj->sendTemplateMsg(urldecode(json_encode($template))));
-                  //  $result = $tempObj->sendTemplateMsg(urldecode(json_encode($template)));
+               $tempObj->sendTemplateMsg(urldecode(json_encode($template)));
+               $result = null;
             break;
 
             default:

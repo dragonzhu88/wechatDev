@@ -1,3 +1,6 @@
+
+
+
 <?php
 /**
  * Created by PhpStorm.
@@ -9,11 +12,6 @@
 define("APPID","wx9fbe441cac0bd7d1");
 define("APPCECRET","79a664feb2260bec0e8bf2edc395e71c");
 
-if (isset($_GET['code'])){
-    echo 'code = '.$_GET['code']."<br>";
-}else{
-    echo "NO CODE";
-}
 
 $code = $_GET['code'];//前端传来的code值
 $appid = APPID;
@@ -21,13 +19,9 @@ $appsecret = APPCECRET;
 $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=$appid&secret=$appsecret&code=$code&grant_type=authorization_code";
 $result = https_request($url);
 $jsoninfo = json_decode($result, true);
+
 $openid = $jsoninfo["openid"];//从返回json结果中读出openid
-
-echo 'openid = '.$openid."<br>";
-
 $access_token = $jsoninfo["access_token"];//从返回json结果中读出openid
-
-echo 'access_token = '.$access_token."<br>";
 
 $url1 = "https://api.weixin.qq.com/sns/userinfo?access_token=$access_token&openid=$openid&lang=zh_CN";
 $result1 = https_request($url1);
@@ -39,11 +33,90 @@ $province=$jsoninfo1["province"];
 $city=$jsoninfo1["city"];
 $headimgurl=$jsoninfo1["headimgurl"];
 
-echo 'nicename = '.$nickname."<br>";
-echo 'sex = '.$sex."<br>";
-echo 'province = '.$province."<br>";
-echo 'city = '.$city."<br>";
-echo 'headimgurl = '.$headimgurl."<br>";
+$headimg = "<img src=\"".$headimgurl."\"/>";
+
+
+echo "<head>";
+echo "<meta charset=\"UTF-8\">";
+echo "<title>";
+echo "你已通过验证";
+echo "</title>";
+
+
+echo "<link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css\">";
+echo "<script src=\"http://code.jquery.com/jquery-1.8.3.min.js\"></script>";
+echo "<script src=\"http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js\"></script>";
+
+echo "</head>";
+
+echo "<body>";
+
+echo "<div data-role=\"page\" id=\"pageone\">";
+
+echo "<ul data-role=\"listview\">";
+echo "<li>";
+echo 'nicename = '.$nickname;
+echo "</li>";
+echo "<li>";
+echo 'sex = '.$sex;
+echo "</li>";
+echo "<li>";
+echo 'province = '.$province;
+echo "</li>";
+echo "<li>";
+echo 'city = '.$city;
+echo "</li>";
+echo "<li>";
+echo 'nicename = '.$nickname;
+echo "</li>";
+echo "<li>";
+echo "headimg = ".$headimg;
+echo "</li>";
+echo "<li>";
+echo 'access_token = '.$access_token;
+echo "</li>";
+echo "<li>";
+echo 'openid = '.$openid;
+echo "</li>";
+echo "<li>";
+echo 'code = '.$code;
+echo "</li>";
+
+echo "</ul>";
+
+echo "</div>";
+echo "</body>";
+echo "</html>";
+
+//echo 'nicename = '.$nickname."<br>";
+//echo 'sex = '.$sex."<br>";
+//echo 'province = '.$province."<br>";
+//echo 'city = '.$city."<br>";
+//echo 'headimgurl = '.$headimgurl."<br>";
+//echo 'access_token = '.$access_token."<br>";
+//echo 'openid = '.$openid."<br>";
+//echo 'code = '.$code;
+
+//$nickname = 'test';
+//$openid = 'test';
+//$access_token = 'test';
+//$sex = 'test';
+//$city = 'test';
+//$province = 'test';
+//$headimgurl = 'test';
+
+//$backAjaxVal = array();
+//$backAjaxVal['code'] = $code;
+//$backAjaxVal['name'] = $nickname;
+//$backAjaxVal['openid'] = $openid;
+//$backAjaxVal['accesstoken'] = $access_token;
+//$backAjaxVal['sex'] = $sex;
+//$backAjaxVal['city'] = $city;
+//$backAjaxVal['province'] = $province;
+//$backAjaxVal['headimgurl'] = $headimgurl;
+//
+//echo json_encode($backAjaxVal);
+
 
 
 function https_request($url,$data = null){

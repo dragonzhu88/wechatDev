@@ -8,24 +8,23 @@
  */
 class TemplateMsg
 {
-    private $_appid = null;
-    private $_appsecret = null;
+    private $_appid = 'wx9fbe441cac0bd7d1';
+    private $_appsecret = '79a664feb2260bec0e8bf2edc395e71c';
     private $_lasttime = null;
     private $_access_token = null;
-
-
-    public function __construct($appid,$appsecret)
+    
+    public function __construct($appid=null,$appsecret=null)
     {
         if($appid && $appsecret){
             $this->_appid = $appid;
-            $this->_appid = $appsecret;
+            $this->_appsecret = $appsecret;
         }
 
         $this->_lasttime = 1406469747;
-        $this->_access_token = '2gs7HVqO79x8F0yGL8eC5FlWwqLvGDhCxowoFLlwjn4e0n7Ieh6OFbR-zRTqSS8uANI7Za2YmpxHZMEAm-21Ab_sTiOr3qim2vInH4nBcQ8pfU0TSWe8jRC8B5eS6x2yLYKfADAANZ';
+        $this->_access_token = 'UGYg9CR-mYFy6jZxWBZYly6Ds-79A3JEvg9EtpCEk_Wgx-29A4W6wf9oPQL4cjaEJwq3MKF_di4RhOMieDm8JbOXERObtnpHg8R2fMfQ30gIHNaAHALKQ';
 
-        if(time()>($this->_lasttime)){
-            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->_appid.'&secret'=$this->_appsecret";
+        if(time()>($this->_lasttime + 7200)){
+            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$this->_appid.'&secret='.$this->_appsecret;
             $res = $this->http_request($url);
             $result = json_decode($res,true);
             $this->_access_token = $result['access_token'];
@@ -35,6 +34,12 @@ class TemplateMsg
             var_dump($this->_access_token);
         }
 
+
+
+    }
+
+    public function getAccessToken(){
+        return $this->_access_token;
     }
 
     public function http_request($url,$data = null){
@@ -56,7 +61,7 @@ class TemplateMsg
     }
 
     public function sendTemplateMsg($data){
-        $url = 'https://api.weixin.qq.com/cgi-bin/template/api_set_industry?access_token='.$this->_access_token;
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $this->_access_token;
         $res = $this->http_request($url,$data);
         return json_decode($res,true);
 
