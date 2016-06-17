@@ -160,7 +160,7 @@ class RecvMsg
                 break;
 
             case '帮助':
-                $content = "输入以下文字进入相应的功能：\n【音乐】收听火影忍者音乐\n【表情】收到一个表情\n【单图文】收到一个单图文信息\n【多图文】收到一个多图文信息\n【2048】玩2048游戏\n【第三方】进入第三方登操作\n【查成绩】进入英语4,6级查询\n
+                $content = "输入以下文字进入相应的功能：\n【音乐】收听火影忍者音乐\n【表情】收到一个表情\n【单图文】收到一个单图文信息\n【多图文】收到一个多图文信息\n【2048】玩2048游戏\n【第三方】进入第三方登操作\n【查成绩】进入英语4,6级查询\n【JSSDK】微信JSSDK接口
                 ";
 
                 $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
@@ -219,8 +219,14 @@ class RecvMsg
                 break;
 
             case '第三方':
-                $url = 'http://whiteyushan.sinaapp.com/oauth2.html';
+                $url = 'http://whiteyushan.sinaapp.com/oauth2.php';
                 $content="<a href=\"https://open.weixin.qq.com/connect/oauth2/authorize?appid=".APPID.'&redirect_uri='.$url."&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect\" > 点击认证 </a>";
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+                break;
+
+            case 'JSSDK':
+
+                $content="<a href='http://whiteyushan.sinaapp.com/jdkdev.php'> 点击浏览JSSDK接口</a>";
                 $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
                 break;
 
