@@ -10,17 +10,24 @@
 
 require_once('RespondCommonMsg.class.php');
 require_once('TemplateMsg.class.php');
+require_once('Robot.class.php');
+
 
 define("APPID","wx9fbe441cac0bd7d1");
 define("APPCECRET","79a664feb2260bec0e8bf2edc395e71c");
+define('ROBOT_USR_ID','eb2edb736');
+define('API_KEY','2bfc042724b9c5dcd444797c7bb79363');
+
 
 class RecvMsg
 {
     private $_respondMsg;
+    private $_robot;
 
     public function __construct()
     {
         $this->_respondMsg = new RespondCommonMsg();
+        $this->_robot = new Robot();
     }
 
     public function recvMsgType($postObj){
@@ -74,7 +81,7 @@ class RecvMsg
         {
             case "subscribe":
                 $content = "欢迎关注白羽扇 \n 输入【帮助】可以查询所有功能";
-               // $content .= (!empty($postObj->EventKey))?("\n来自二维码场景 ".str_replace("qrscene_","",$postObj->EventKey)):"";
+                // $content .= (!empty($postObj->EventKey))?("\n来自二维码场景 ".str_replace("qrscene_","",$postObj->EventKey)):"";
                 break;
 
             case "unsubscribe":
@@ -231,54 +238,61 @@ class RecvMsg
                 break;
 
             case '模板消息':
-                    $tempObj = new TemplateMsg();
-                    $template = array('touser' => 'oJx_3t76LNyOLfTAzgyal2th-fEo',
-                        "template_id" =>"0ZxaJRvThvxwfWXIiGd2-oQurUtsKBhnh71YB2PRHNE",
-                        "url"=>"http://weixin.qq.com/download",
-                        'topcolor' => '#7B68EE',
-                        "data"=> array(
-                            "User" => array(
-                                "value"=>"朱先生",
-                                "color"=>"#173177"
-                            ),
-                            "Date"=> array(
-                                "value"=>"12月28日 19时24分",
-                                "color"=>"#173177"
-                            ),
-                            "CardNumber"=>  array(
-                                "value"=>"5523",
-                                "color"=>"#173177"
-                            ),
-                            "Type"=> array(
-                                "value"=>"消费",
-                                "color"=>"#173177"
-                            ),
-                            "Money"=> array(
-                                "value"=>"人民币122260.00元",
-                                "color"=>"#173177"
-                            ),
-                            "DeadTime"=> array(
-                                "value"=>"12月28日19时24分",
-                                "color"=>"#173177"
-                            ),
-                            "Left"=> array(
-                                "value"=>"366504.09",
-                                "color"=>"#173177"
-                            )
+                $tempObj = new TemplateMsg();
+                $template = array('touser' => 'oJx_3t76LNyOLfTAzgyal2th-fEo',
+                    "template_id" =>"0ZxaJRvThvxwfWXIiGd2-oQurUtsKBhnh71YB2PRHNE",
+                    "url"=>"http://weixin.qq.com/download",
+                    'topcolor' => '#7B68EE',
+                    "data"=> array(
+                        "User" => array(
+                            "value"=>"朱先生",
+                            "color"=>"#173177"
+                        ),
+                        "Date"=> array(
+                            "value"=>"12月28日 19时24分",
+                            "color"=>"#173177"
+                        ),
+                        "CardNumber"=>  array(
+                            "value"=>"5523",
+                            "color"=>"#173177"
+                        ),
+                        "Type"=> array(
+                            "value"=>"消费",
+                            "color"=>"#173177"
+                        ),
+                        "Money"=> array(
+                            "value"=>"人民币122260.00元",
+                            "color"=>"#173177"
+                        ),
+                        "DeadTime"=> array(
+                            "value"=>"12月28日19时24分",
+                            "color"=>"#173177"
+                        ),
+                        "Left"=> array(
+                            "value"=>"366504.09",
+                            "color"=>"#173177"
                         )
-                    );
+                    )
+                );
 
-               // $content = $tempObj->getAccessToken();
+                // $content = $tempObj->getAccessToken();
                 //$result = $this->_respondMsg->RespondTextMsg($postObj,$content);
 
                 //var_dump($tempObj->sendTemplateMsg(urldecode(json_encode($template))));
-               $tempObj->sendTemplateMsg(urldecode(json_encode($template)));
-               $result = null;
-            break;
+                $tempObj->sendTemplateMsg(urldecode(json_encode($template)));
+                $result = null;
+                break;
 
             default:
-                $content = '没有匹配关键字';
-                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+               // $content = '没有匹配关键字';
+                $msg = array(
+                    'info'=>$keyword,
+                    'userid'=>ROBOT_USR_ID
+                );
+                $res = $this->_robot->contactRobotMsg($msg);
+                $content = json_decode(json_encode($res), true);
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content['text']);
+//                $result = $this->_respondMsg->RespondTextMsg($postObj,$keyword);
                 break;
         }
 
@@ -333,5 +347,5 @@ class RecvMsg
         }
     }
 
-    
+
 }
