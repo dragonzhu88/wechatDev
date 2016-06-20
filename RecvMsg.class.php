@@ -11,6 +11,8 @@
 require_once('RespondCommonMsg.class.php');
 require_once('TemplateMsg.class.php');
 require_once('Robot.class.php');
+require_once('News.class.php');
+require_once('IPaddress.class.php');
 
 
 define("APPID","wx9fbe441cac0bd7d1");
@@ -23,11 +25,15 @@ class RecvMsg
 {
     private $_respondMsg;
     private $_robot;
+    private $_news;
+    private $_ipInfo;
 
     public function __construct()
     {
         $this->_respondMsg = new RespondCommonMsg();
         $this->_robot = new Robot();
+        $this->_news = new News();
+        $this->_ipInfo = new IPaddress();
     }
 
     public function recvMsgType($postObj){
@@ -275,14 +281,33 @@ class RecvMsg
                     )
                 );
 
-                // $content = $tempObj->getAccessToken();
-                //$result = $this->_respondMsg->RespondTextMsg($postObj,$content);
-
-                //var_dump($tempObj->sendTemplateMsg(urldecode(json_encode($template))));
                 $tempObj->sendTemplateMsg(urldecode(json_encode($template)));
                 $result = null;
                 break;
 
+            case '新闻':
+                $data = array(
+                    'num'=>3,
+                    'page'=>1
+                );
+                $res = $this->_news->getNews($data);
+                $res = json_decode(json_encode($res), true);
+                $content = array();
+                $content[] = array("Title"=>$res['newslist'][0]['title'], "Description"=>$res['newslist'][0]['description'], "PicUrl"=>$res['newslist'][0]['picUrl'], "Url" =>$res['newslist'][0]['url']);
+                $content[] = array("Title"=>$res['newslist'][1]['title'], "Description"=>$res['newslist'][1]['description'], "PicUrl"=>$res['newslist'][1]['picUrl'], "Url" =>$res['newslist'][1]['url']);
+                $content[] = array("Title"=>$res['newslist'][2]['title'], "Description"=>$res['newslist'][2]['description'], "PicUrl"=>$res['newslist'][2]['picUrl'], "Url" =>$res['newslist'][2]['url']);
+                $result = $this->_respondMsg->RespondNewsMsg($postObj,$content);
+
+                break;
+
+            case 'IP':
+                $ipData = $this->_ipInfo->getLocalIp();
+                $res = $this->_ipInfo->getIPaddress($ipData);
+                $res = json_decode(json_encode($res), true);
+                $content = 'IP地址为:'.$res['retData']['ip']."\n". '国家:'.$res['retData']['country']."\n". '省份:'.$res['retData']['province']."\n". '城市:'.$res['retData']['city']."\n". '地区:'.$res['retData']['district']."\n". '运营商:'.$res['retData']['carrier'];
+                $result = $this->_respondMsg->RespondTextMsg($postObj,$content);
+                break;
+            
             default:
                // $content = '没有匹配关键字';
                 $msg = array(

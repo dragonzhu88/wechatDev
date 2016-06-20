@@ -65,10 +65,14 @@ class News
     }
 }
 
-$obj = new News();
-$data = array(
-    'num'=>3,
-    'page'=>1
-);
-$res = $obj->getNews($data);
-var_dump($res);
+//$obj = new News();
+//$data = array(
+//    'num'=>3,
+//    'page'=>1
+//);
+//$res = $obj->getNews($data);
+//$res = json_decode(json_encode($res), true);
+//
+//echo $res['newslist'][0]['title'];
+
+//var_dump($res);

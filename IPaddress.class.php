@@ -25,6 +25,27 @@ class IPaddress
         return json_decode($content);
     }
 
+    public function getLocalIp(){
+        if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown"))
+            $ip = getenv("HTTP_CLIENT_IP");
+        else if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown"))
+            $ip = getenv("HTTP_X_FORWARDED_FOR");
+        else if (getenv("REMOTE_ADDR") && strcasecmp(getenv("REMOTE_ADDR"), "unknown"))
+            $ip = getenv("REMOTE_ADDR");
+        else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown"))
+            $ip = $_SERVER['REMOTE_ADDR'];
+        else
+            $ip = "unknown";
+
+        if(strpos($ip,',')){
+            return(substr($ip,0,strpos($ip,',')));
+        }
+        else{
+            return($ip);
+        }
+
+    }
+
 
     public function curl_request($url,$params=false,$ispost=0){
         $httpInfo = array();
@@ -64,5 +85,14 @@ class IPaddress
 }
 
 $ipAddressObj = new IPaddress();
-$res = $ipAddressObj->getIPaddress('117.89.35.58');
+//$data = $ipAddressObj->getLocalIp();
+//
+////var_dump($data);
+//
+$res = $ipAddressObj->getIPaddress('101.226.62.78');
+$res = json_decode(json_encode($res), true);
+//
+//echo $res['retData']['ip'];
+
 var_dump($res);
+
